@@ -1,9 +1,9 @@
 from django.urls import path
 from . import views
 
-app_name = 'blog'
+app_name = "blog"
 
-urlpatterns = [ 
-    path('', views.post_list, name='post_list'), # type: ignore
-    path('<int:id>/', views.post_detail, name='post_detail'), 
+urlpatterns = [
+    path("", views.post_list, name="post_list"),  # type: ignore
+    path("<int:year>/<int:month>/<int:day>/<str:slug>/", views.post_detail, name="post_detail"), # type: ignore
 ]
