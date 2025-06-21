@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from blog.models import Post
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.generic import ListView
 # from django.http import Http404
 
 
@@ -12,23 +13,35 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 #     return render(request, "about.html") # type: ignore
 
 
-def post_list(request): # type: ignore
-    post_list = Post.objects.all()
-    paginator = Paginator(post_list, 3)  # Show 3 posts per page.
-    page_number = request.GET.get('page', 1)
+# def post_list(request): # type: ignore
+#     post_list = Post.objects.all()
+#     paginator = Paginator(post_list, 3)  # Show 3 posts per page.
+#     page_number = request.GET.get('page', 1)
 
-    try: # type: ignore
-        posts = paginator.get_page(page_number) # type: ignore
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        posts = paginator.get_page(1) # type: ignore
-    except EmptyPage:
-        posts = paginator.get_page(paginator.num_pages)
+#     try: # type: ignore
+#         posts = paginator.get_page(page_number) # type: ignore
+#     except PageNotAnInteger:
+#         # If page is not an integer, deliver first page.
+#         posts = paginator.get_page(1) # type: ignore
+#     except EmptyPage:
+#         posts = paginator.get_page(paginator.num_pages)
     
-    return render(request, 'blog/post/list.html', {'posts': posts}) # type: ignore
+#     return render(request, 'blog/post/list.html', {'posts': posts}) # type: ignore
+# كود مختصر بدل من  الكود اللي في الاعلى
 
 
+class PostListView(ListView):
+    """
+    Alternative post list view"""
+    model = Post
+    context_object_name = 'posts'
+    paginate_by = 3
+    template_name = 'blog/post/list.html'
 
+    def get_queryset(self):
+        return Post.objects.filter(status=Post.Status.PUBLISHED).order_by('-publish')
+
+ 
 def post_detail(request, year, month, day, slug): # type: ignore
     post = get_object_or_404(Post, status=Post.Status.PUBLISHED
                             , publish__year=year
